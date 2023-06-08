@@ -1,0 +1,48 @@
+version: "3.1"
+
+services:
+  elasticsearch:
+    container_name: elastic7
+    image: elasticsearch:7.17.10
+    restart: always
+    environment:
+      - discovery.type:single-node
+      - ES_JAVA_OPTS:-Xms1g -Xmx1g
+      - node.name=el7-demo-es
+      - cluster.name=es7-docker-cluster
+      - bootstrap.memory_lock=true
+      - network.host=127.0.0.1
+      - http.host=0.0.0.0
+      - transport.host=localhost
+   #   - ELASTICSEARCH_USERNAME:elastic
+   #   - ELASTICSEARCH_PASSWORD:*************
+      - xpack.security.enabled:false
+    mem_limit: 2073741824
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - type: bind
+        source: /docker/data/elastic
+        target: /usr/share/elasticsearch/data
+    ports:
+      - 9209:9200
+      - 9309:9300
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER:admin
+      - GF_SECURITY_ADMIN_PASSWORD:*********
+    volumes:
+      - type: bind
+        source: /docker/data/grafana
+        target: /var/lib/grafana
+    ports:
+      - target: 3000
+        published: 3300   
